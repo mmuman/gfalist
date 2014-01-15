@@ -197,8 +197,8 @@ void gf4tp_init(int (*output)(const char *format, ...),
 		j /= 2; \
 		dst--; \
 		for (i = 0; i < j; i++) { \
-			c       = dst[-i]; \
-			dst[-i] = bin[ i]; \
+			c       = dst[-(signed)i]; \
+			dst[-(signed)i] = bin[ i]; \
 			bin[ i] = c; \
 		} \
 		dst++; \
