@@ -1,5 +1,7 @@
-gfalist converts .GFA binary files to .LST files.
-It allows generating listings from binary GFA BASIC files.
+Reads tokenized GFA BASIC version 3.x source files (.GFA) and converts them to human readable ASCII listings (.LST).
+
+This is a fixed version of the original ONS tool available at:
+http://titan.plasma.xg8.de:8080/~rtc/
 
 It can be used along with git to get text diffs on GFA files (but not merges):
 
