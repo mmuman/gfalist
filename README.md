@@ -21,6 +21,8 @@ It can be used along with git to get text diffs on GFA files (but not merges):
     @@ -0,0 +1 @@
     +QUIT 0
 
+See [http://git-scm.com/book/en/Customizing-Git-Git-Attributes#Binary-Files](the git book) for more info on using text filters and difftools on binary files with git.
+
 Original readme below.
 
 OUR NEXT STEP -- The GFABASIC4 development package
