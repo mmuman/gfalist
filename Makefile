@@ -77,7 +77,7 @@ test: $(GEN)
 
 %.out: gb36test.a gfalist
 	ar xvo $< $*.gfa $*.lst
-	gfalist -b -o $*.tmp $*.gfa
+	./gfalist -b -o $*.tmp $*.gfa
 	diff $*.lst $*.tmp > $@ || true
 	rm $*.gfa $*.lst $*.tmp
 
