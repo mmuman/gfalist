@@ -364,8 +364,15 @@ unsigned char *gf4tp_tp(unsigned char *dst, struct gfainf *gi,
 					 */
 					src = mrk;
 
-			} else
-				src = bot;
+			} else { /* Added hex printing of INLINE data / Markus Hoffmann 2013 */
+			  printf("' ## INLINE: src=%p bot=%p",src,bot);
+			  for (mrk = src; mrk < bot; mrk++) {
+			    if((mrk-src)%16==0) printf("\n' $%04x: ",mrk-src);
+			    printf("%02x ",*mrk);
+			  
+			  } printf("\n' %d  Bytes.\n",mrk-src);
+			  src = bot; 
+			}
 			break;
 		case 199:
 			src++;
