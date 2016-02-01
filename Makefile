@@ -36,10 +36,6 @@ HSRC=charset.h  sky.h  tables.h
 CSRC= $(OBJS:.o=.c) 
 BINDIST= gfalist
 
-GB36_GEN = default2.out default4.out hell.out default.out default3.out \
-	default5.out sky.out
-
-GEN = $(GB36_GEN)
 
 TRASH = core ons.spec.OLD
 
@@ -77,7 +73,7 @@ version.h: HISTORY verextr.sh $(SKY_OBJS)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(OBJS) $(TRASH) $(GEN)
+	rm -f $(OBJS) $(TRASH)
 
 realclean: clean
 	rm -f $(TARGETS) gfalist.exe gfalist.ttp gfalist_$(LIBNO)-$(RELEASE)_*.deb
@@ -120,15 +116,6 @@ rpms: dist
 
 ons.spec: README HISTORY packdist.sh
 	sh packdist.sh -a README -v HISTORY,version.h -t $(DISTRIB) -s ons.spec fs
-
-test: $(GEN)
-	@for i in $(GEN); do ls -l $$i; done
-
-%.out: tests/gb36test.a gfalist
-	ar xvo $< $*.gfa $*.lst
-	./gfalist -b -o $*.tmp $*.gfa
-	diff $*.lst $*.tmp > $@ || true
-	rm $*.gfa $*.lst $*.tmp
 
 #DEPEND
 gfalist: libsky.a
