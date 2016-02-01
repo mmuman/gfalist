@@ -2,6 +2,18 @@
 #include <ctype.h> /* tolower() */
 #include <assert.h> /* assert() */
 #include <string.h> /* strncpy() */
+#include <sys/types.h> /* open() */
+#include <sys/stat.h> /* open() */
+#include <unistd.h> /* open() */
+#include <errno.h> /* write() */
+#include <fcntl.h> /* open() */
+
+#ifndef O_BINARY
+#define O_BINARY 0
+#endif
+#ifndef S_IRGRP
+#define S_IRGRP 0
+#endif
 
 #include "sky.h"
 #include "tables.h"
@@ -9,6 +21,19 @@
 static int (*gf4tp_output)(const char *format, ...);
 static unsigned char *(*gf4tp_resvar)(struct gfainf *gi, unsigned short type,
                                       unsigned short var);
+
+static void io_error(int e,char *n) { gf4tp_output("IO-ERROR #%d  %s\n",e,n); }
+
+/* Saves an area in memory starting at adr with length len to a file
+   with filename name.  MH 2016, taken from X11-Basic
+   RETURNS: 0 on success and -1 on error */
+
+static int bsave(const char *name, char *adr, size_t len) { 
+  int fdis=open(name,O_CREAT|O_BINARY|O_WRONLY|O_TRUNC,S_IRUSR|S_IWUSR|S_IRGRP);
+  if(fdis==-1) return(-1);
+  if(write(fdis,adr,len)==-1) io_error(errno,"write");
+  return(close(fdis));
+}
 
 void gf4tp_init(int (*output)(const char *format, ...), 
                 unsigned char *(*resvar)(struct gfainf *gi, 
@@ -20,8 +45,7 @@ void gf4tp_init(int (*output)(const char *format, ...),
 }
 
 unsigned char *gf4tp_tp(unsigned char *dst, struct gfainf *gi, 
-                        struct gfalin *gl, unsigned int flags)
-{
+                        struct gfalin *gl, unsigned int flags) {
 	/* Current source, marker, top and bottom pointers */
 	const unsigned char *src = gl->line, *mrk, *top = gl->line,
 	                    *bot = gl->line + gl->size;
@@ -39,6 +63,10 @@ unsigned char *gf4tp_tp(unsigned char *dst, struct gfainf *gi,
 	/* double conversion string */
 	char *dcs;
 	int num;
+	
+	unsigned char *linestart=dst;
+	
+	
 	union {
 		unsigned long long int ull;
 		double d;
@@ -338,7 +366,7 @@ unsigned char *gf4tp_tp(unsigned char *dst, struct gfainf *gi,
 
 
 
-	while (src < bot)
+	while (src < bot) {
 		switch (pft = *src++) {
 		case 70:
 			src += (src - top) & 0x01;
@@ -364,13 +392,34 @@ unsigned char *gf4tp_tp(unsigned char *dst, struct gfainf *gi,
 					 */
 					src = mrk;
 
-			} else { /* Added hex printing of INLINE data / Markus Hoffmann 2013 */
-			  printf("' ## INLINE:");
-			  for (mrk = src; mrk < bot; mrk++) {
-			    if((mrk-src)%16==0) printf("\n' $%04x: ",mrk-src);
-			    printf("%02x ",*mrk);
-			  
-			  } printf("\n' %d  Bytes.\n",mrk-src);
+			} else { 
+			  /* treat INLINE data... */
+			  if(flags&TP_SAVEINLINE) {
+			    /* find out pointer name and save the data into file.... */
+			    unsigned char filename[256];
+			    unsigned char *p=linestart;
+			    unsigned char *d=filename;
+			    while(p<dst && *p==' ') p++;
+			    while(p<dst && *p) {
+			      if(*p==' ') *d++='-';
+			      else if(*p=='%') *d++='.';
+			      else if(*p==',') break;
+			      else if(isprint(*p)) *d++=*p;
+			      else *d++='_';
+			      p++;
+			    }
+			    *d++='i';*d++='n';*d++='l';
+			    *d=0;
+			    bsave(filename,src,(size_t)(bot-src));
+			    gf4tp_output("Saved INLINE data into file --> %s (%d bytes.)\n",filename,bot-src);
+			  } else {
+			    /* Added hex printing of INLINE data / Markus Hoffmann 2013 */
+			    printf("' ## INLINE:");
+			    for (mrk = src; mrk < bot; mrk++) {
+			      if((mrk-src)%16==0) printf("\n' $%04x: ",mrk-src);
+			      printf("%02x ",*mrk);
+			    } printf("\n' %d  Bytes.\n",mrk-src);
+			  }
 			  src = bot; 
 			}
 			break;
@@ -553,6 +602,7 @@ unsigned char *gf4tp_tp(unsigned char *dst, struct gfainf *gi,
 		case 229: case 230: case 231: case 232: case 233:
 		case 234: case 235: case 236: case 237: case 238:
 		case 239:
+			// varstart=dst;  /*  save marker for variable name for INLINE*/
 			i = pft - 224;
 			v = *src++;
 			pushvar(dst, mrk, i, v, gi, gf4tp_resvar);
@@ -571,6 +621,7 @@ unsigned char *gf4tp_tp(unsigned char *dst, struct gfainf *gi,
 			while (*mrk != 0x00)
 				*dst++ = *mrk++;
 		}
+	}
 	*dst = '\0';
 	return dst;
 }

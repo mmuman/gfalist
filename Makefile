@@ -80,7 +80,7 @@ clean:
 	rm -f $(OBJS) $(TRASH) $(GEN)
 
 realclean: clean
-	rm -f $(TARGETS) 
+	rm -f $(TARGETS) gfalist.exe gfalist.ttp gfalist_$(LIBNO)-$(RELEASE)_*.deb
 
 clobber: realclean
 	rm -f $(PRECIOUS)

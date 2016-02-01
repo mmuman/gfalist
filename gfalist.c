@@ -235,7 +235,7 @@ int main(int argc, char *argv[])
 
 	gf4tp_init(output, rvsimp);
 
-	while ((opt = getopt(argc, argv, "o:vctVb")) != -1)
+	while ((opt = getopt(argc, argv, "o:vctVbih")) != -1)
 		switch (opt) {
 		case 'o': /* Output */
 			if (outfile != NULL) {
@@ -256,6 +256,10 @@ int main(int argc, char *argv[])
 		case 't': /* Timer */
 			flags |= TP_TIME;
 			break;
+		case 'i': /* save INLINE data into .inl files*/
+			flags |= TP_SAVEINLINE;
+			break;		
+		case 'h': /* display short help and exit */
 		case 'V': /* display Version and exit */
 #ifdef PAPAYA
 			output("GF4TP     Part of OUR NEXT STEP, the GFABASIC4 devel package.\n"
