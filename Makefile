@@ -6,8 +6,12 @@ LIBNO=0.01
 RELEASE=1
 
 CC = gcc
+# Cross-Compiler fuer MS WINDOWS
+WINCC=i586-mingw32msvc-gcc
+# Cross-Compiler fuer ATARI ST TOS
+TOSCC=m68k-atari-mint-gcc
 
-CFLAGS = -g3 -O2 -Wall
+CFLAGS = -g3 -O2 -Wall 
 LFLAGS = -L.
 
 # Directories
@@ -61,6 +65,10 @@ libsky.a: $(SKY_OBJS)
 
 gfalist: $(GFALIST_OBJS)
 	$(CC) $(LFLAGS) $+ -o $@ -lsky
+gfalist.exe: $(CSRC)
+	$(WINCC)  $+ -o $@ 
+gfalist.ttp: $(CSRC)
+	$(TOSCC)  $+ -o $@ 
 
 version.h: HISTORY verextr.sh $(SKY_OBJS)
 	sh verextr.sh -g $< $@
@@ -72,7 +80,7 @@ clean:
 	rm -f $(OBJS) $(TRASH) $(GEN)
 
 realclean: clean
-	rm -f $(TARGETS)
+	rm -f $(TARGETS) 
 
 clobber: realclean
 	rm -f $(PRECIOUS)
