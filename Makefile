@@ -97,11 +97,13 @@ doc-pak : $(DEBDOC)
 	mkdir $@
 	cp $(DEBDOC) $@/
 
-install : gfalist
+install : gfalist gfalist.1
 	install -s -m 755 gfalist $(BINDIR)/
+	install -m 644 gfalist.1 $(MANDIR)/man1/gfalist.1
 
 uninstall :
 	rm -f $(BINDIR)/gfalist 
+	rm -f $(MANDIR)/man1/gfalist.1
 
 
 deb :	$(BINDIST) doc-pak
