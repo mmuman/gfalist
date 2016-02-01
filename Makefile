@@ -75,7 +75,7 @@ ons.spec: README HISTORY packdist.sh
 test: $(GEN)
 	@for i in $(GEN); do ls -l $$i; done
 
-%.out: gb36test.a gfalist
+%.out: tests/gb36test.a gfalist
 	ar xvo $< $*.gfa $*.lst
 	./gfalist -b -o $*.tmp $*.gfa
 	diff $*.lst $*.tmp > $@ || true
