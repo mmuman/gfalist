@@ -1,11 +1,20 @@
-# The top level Makefile
+# Makefile for GFALIST (c) Peter Backes
+# Last modified by Markus Hoffmann 2014,2016
 
 DISTRIB = ons
+LIBNO=0.01
+RELEASE=1
 
 CC = gcc
 
 CFLAGS = -g3 -O2 -Wall
 LFLAGS = -L.
+
+# Directories
+prefix=/usr
+exec_prefix=${prefix}
+BINDIR=${exec_prefix}/bin
+MANDIR=${prefix}/share/man
 
 # Precious targets
 PRECIOUS = version.h
@@ -17,6 +26,11 @@ SKY_OBJS = sky.o tables.o
 GFALIST_OBJS = gfalist.o charset.o
 
 OBJS = $(SKY_OBJS) $(GFALIST_OBJS)
+
+# Headerfiles which should be added to the distribution
+HSRC=charset.h  sky.h  tables.h
+CSRC= $(OBJS:.o=.c) 
+BINDIST= gfalist
 
 GB36_GEN = default2.out default4.out hell.out default.out default3.out \
 	default5.out sky.out
@@ -66,6 +80,31 @@ clobber: realclean
 dist: MANIFEST HISTORY packdist.sh
 	sh packdist.sh -t $(DISTRIB) -m $< -v HISTORY,version.h -s ons.spec ck md
 
+
+# For the debin package (created with checkinstall)
+
+# Documentation files to be packed into the .deb file:
+DEBDOC = README COPYING HISTORY 
+doc-pak : $(DEBDOC)
+	mkdir $@
+	cp $(DEBDOC) $@/
+
+install : gfalist
+	install -s -m 755 gfalist $(BINDIR)/
+
+uninstall :
+	rm -f $(BINDIR)/gfalist 
+
+
+deb :	$(BINDIST) doc-pak
+	sudo checkinstall -D --pkgname gfalist --pkgversion $(LIBNO) \
+	--pkgrelease $(RELEASE)  \
+	--maintainer kollo@users.sourceforge.net \
+        --backup  \
+	--pkggroup interpreters   \
+	--pkglicense GPL --strip=yes --stripso=yes --reset-uids 
+	rm -rf backup-*.tgz doc-pak
+
 rpms: dist
 	sh packdist.sh -t $(DISTRIB) -v HISTORY,version.h mr
 
@@ -84,5 +123,5 @@ test: $(GEN)
 #DEPEND
 gfalist: libsky.a
 sky.o: sky.c sky.h tables.h
-gfalist.o: gfalist.c charset.h sky.h tables.h version.h
+gfalist.o: gfalist.c $(HSRC) version.h
 
