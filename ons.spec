@@ -1,7 +1,7 @@
 #
-# RPM spec file for package OUR NEXT STEP
+# RPM spec file for package OUR NEXT STEP (gfalist)
 # 
-# Please send bugfixes or comments to <m.hoffmann@uni-bonn.de>.
+# Please send bugfixes or comments to <kollo@users.sourceforge.net>.
 #
 
 Summary: The GFABASIC4 development package
@@ -11,9 +11,9 @@ Version: 0.01.a
 Release: 1
 License: GPL
 Group: Development/Languages
-Source: http://www-cip.uni-bonn.de/~hoffmann/X11-Basic/%{name}-%{version}.tar.gz
-URL: http://www-cip.uni-bonn.de/~hoffmann/X11-Basic
-Packager: Markus Hoffmann <m.hoffmann@uni-bonn.de>
+Source: https://github.com/mmuman/gfalist
+URL:  https://github.com/mmuman/gfalist
+Packager: Markus Hoffmann <kollo@users.sourceforge.net>
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 
 %description
@@ -59,6 +59,8 @@ test "$RPM_BUILD_ROOT" != / && rm -rf $RPM_BUILD_ROOT
 %{_libdir}/libsky.a
 
 %changelog
+* 2016-01-29 update of URL / contact email
+
 * Mon Sep  9 2002 Peter Backes <rtc@gmx.de> 0.00.a.pl11-1
 - Removed version.h from package as it's not required.
 - Replaced obsolete Copyright tag by License tag.
@@ -73,4 +75,3 @@ test "$RPM_BUILD_ROOT" != / && rm -rf $RPM_BUILD_ROOT
 
 * Tue Sep  7 2001 Markus Hoffmann <m.hoffmann@uni-bonn.de> 
 - 1st release
-

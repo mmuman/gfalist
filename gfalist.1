@@ -1,0 +1,73 @@
+.TH gfalist 1 "06 May 2003"
+.SH NAME
+gfalist - Reads tokenized GFA BASIC version 3.x source files (.GFA) and converts them to human readable ASCII listings (.LST).
+
+.SH SYNOPSIS
+.B gfalist
+\fR[\fB-o lstfile\fR]
+.RB [ -vcthi ]
+.RI  gfafile 
+
+.SH DESCRIPTION
+Reads an .gfa file as input.  Produces a .lst (ASCII)
+file as output.
+
+.SH OPTIONS
+.TP
+.BI "\-o " file
+Place output in file \c
+.I file\c
+\&. INLINE data will not be saved. 
+.TP
+.BI "\-i "
+Save INLINE data into separate files, named after the pointers, ending .inl.
+.TP
+.B -h,--help
+makes 
+.B gfalist
+print a short usage information and exit.
+.TP
+.B -v,--verbose
+.B gfalist
+prints information about its processing on Standard Error.
+
+For detailed help and description of the implemented commands take a 
+look at the README file and manual which comes with the gfalist package. 
+
+.SH EXAMPLES
+.nf
+gfalist testme.gfa 
+    prints the code to stdout
+gfalist testme.gfa -o testme.lst
+    converts testme.gfa into testme.lst (ASCII listing)
+gfalist testme.gfa > testme.lst
+    converts testme.gfa into testme.lst (ASCII listing) including
+    INLINE DATA converted to HEXDUMP
+.fi
+
+.SH LIMITATIONS
+The support to GFA-BASIC version 3 is limited. 
+
+.SH VERSION
+This Page was created for V.0.01
+
+.SH AUTHOR
+Copyright (C) 1992-2001 by Peter Backes.
+Man-Page created by Markus Hoffmann
+
+.SH COPYRIGHT
+Copyright (C) 1992-2001 Peter Backes
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; version 2 of the License, not any 
+earlier or later version.
+
+This program is distributed in the hope that  it  will  be
+useful, but WITHOUT ANY WARRANTY; without even the implied
+warranty of MERCHANTABILITY or FITNESS  FOR  A  PARTICULAR
+PURPOSE.   See  the  GNU  General  Public License for more
+details.
+.SH "SEE ALSO"
+OUR NEXT STEP -- The GFABASIC4 development package
+

@@ -13,6 +13,7 @@
 #define TP_VERB   0x04 /* Be verbose */
 #define TP_TIME   0x08 /* Measure time */
 #define TP_BUGEM  0x10 /* Emulate bugs */
+#define TP_SAVEINLINE  0x20 /* Save INLINE data into .inl files */
 
 struct gfahdr {
 	unsigned char resvd:7;

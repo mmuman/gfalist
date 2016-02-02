@@ -1,11 +1,24 @@
-# The top level Makefile
+# Makefile for GFALIST (c) Peter Backes
+# Last modified by Markus Hoffmann 2014,2016
 
 DISTRIB = ons
+LIBNO=0.01
+RELEASE=1
 
 CC = gcc
+# Cross-Compiler fuer MS WINDOWS
+WINCC=i586-mingw32msvc-gcc
+# Cross-Compiler fuer ATARI ST TOS
+TOSCC=m68k-atari-mint-gcc
 
-CFLAGS = -g3 -O2 -Wall
+CFLAGS = -g3 -O2 -Wall 
 LFLAGS = -L.
+
+# Directories
+prefix=/usr
+exec_prefix=${prefix}
+BINDIR=${exec_prefix}/bin
+MANDIR=${prefix}/share/man
 
 # Precious targets
 PRECIOUS = version.h
@@ -18,10 +31,11 @@ GFALIST_OBJS = gfalist.o charset.o
 
 OBJS = $(SKY_OBJS) $(GFALIST_OBJS)
 
-GB36_GEN = default2.out default4.out hell.out default.out default3.out \
-	default5.out sky.out
+# Headerfiles which should be added to the distribution
+HSRC=charset.h  sky.h  tables.h
+CSRC= $(OBJS:.o=.c) 
+BINDIST= gfalist
 
-GEN = $(GB36_GEN)
 
 TRASH = core ons.spec.OLD
 
@@ -47,6 +61,10 @@ libsky.a: $(SKY_OBJS)
 
 gfalist: $(GFALIST_OBJS)
 	$(CC) $(LFLAGS) $+ -o $@ -lsky
+gfalist.exe: $(CSRC)
+	$(WINCC)  $+ -o $@ 
+gfalist.ttp: $(CSRC)
+	$(TOSCC)  $+ -o $@ 
 
 version.h: HISTORY verextr.sh $(SKY_OBJS)
 	sh verextr.sh -g $< $@
@@ -55,10 +73,10 @@ version.h: HISTORY verextr.sh $(SKY_OBJS)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(OBJS) $(TRASH) $(GEN)
+	rm -f $(OBJS) $(TRASH)
 
 realclean: clean
-	rm -f $(TARGETS)
+	rm -f $(TARGETS) gfalist.exe gfalist.ttp gfalist_$(LIBNO)-$(RELEASE)_*.deb
 
 clobber: realclean
 	rm -f $(PRECIOUS)
@@ -66,23 +84,41 @@ clobber: realclean
 dist: MANIFEST HISTORY packdist.sh
 	sh packdist.sh -t $(DISTRIB) -m $< -v HISTORY,version.h -s ons.spec ck md
 
+
+# For the debin package (created with checkinstall)
+
+# Documentation files to be packed into the .deb file:
+DEBDOC = README COPYING HISTORY 
+doc-pak : $(DEBDOC)
+	mkdir $@
+	cp $(DEBDOC) $@/
+
+install : gfalist gfalist.1
+	install -s -m 755 gfalist $(BINDIR)/
+	install -m 644 gfalist.1 $(MANDIR)/man1/gfalist.1
+
+uninstall :
+	rm -f $(BINDIR)/gfalist 
+	rm -f $(MANDIR)/man1/gfalist.1
+
+
+deb :	$(BINDIST) doc-pak
+	sudo checkinstall -D --pkgname gfalist --pkgversion $(LIBNO) \
+	--pkgrelease $(RELEASE)  \
+	--maintainer kollo@users.sourceforge.net \
+        --backup  \
+	--pkggroup interpreters   \
+	--pkglicense GPL --strip=yes --stripso=yes --reset-uids 
+	rm -rf backup-*.tgz doc-pak
+
 rpms: dist
 	sh packdist.sh -t $(DISTRIB) -v HISTORY,version.h mr
 
 ons.spec: README HISTORY packdist.sh
 	sh packdist.sh -a README -v HISTORY,version.h -t $(DISTRIB) -s ons.spec fs
 
-test: $(GEN)
-	@for i in $(GEN); do ls -l $$i; done
-
-%.out: gb36test.a gfalist
-	ar xvo $< $*.gfa $*.lst
-	./gfalist -b -o $*.tmp $*.gfa
-	diff $*.lst $*.tmp > $@ || true
-	rm $*.gfa $*.lst $*.tmp
-
 #DEPEND
 gfalist: libsky.a
 sky.o: sky.c sky.h tables.h
-gfalist.o: gfalist.c charset.h sky.h tables.h version.h
+gfalist.o: gfalist.c $(HSRC) version.h
 
