@@ -1,0 +1,5 @@
+*.o
+gfalist
+gfalist_*.deb
+libsky.a
+version.h

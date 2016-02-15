@@ -28,7 +28,7 @@ static unsigned char *rvsimp(struct gfainf *gi, unsigned short type,
 {
 	static unsigned char vbuf[11]; /* vffff_ffff\0 */
 	unsigned char *dst = vbuf;
-	char *src = vbuf;
+	char *src = (char *)vbuf;
 	sprintf(src, "v%x_%x", type, var);
 	while (*src != '\0')
 		switch (*src++) {
@@ -113,23 +113,31 @@ static void process(char *name, FILE *ost, char *file, unsigned int flags)
 	if ((flags & TP_VERB) != 0x00) 
 		output("  Processing DI-Block\n");
 
-	gf4tp_getdi(&gi, dibuf);
+        /* Check GFA Version. */
 
-	/* Cannot process files older than version 4 yet. */
-	switch (gh.vers) {
-	case 1:
-	case 2:
-	case 3:
-		output("Version %d files not supported yet.\n", gh.vers);
-		if (ist != stdin)
-			fclose(ist);
+        if((flags&TP_FORCE)==0) {
+  	  /* Cannot process files older than version 4 yet. */
+	  switch (gh.vers) {
+	  case 1:
+	  case 2:
+	  case 3:
+		output("WARNING: Version %d files not supported yet.\n", gh.vers);
+	        output("If you want to try anyways, please restart gfalist with the -f option.\n");
+		if(ist!=stdin) fclose(ist);
 		return;
-	case 70:
-		output("GF%.14s files not supported yet.\n", gh.mag);
-		if (ist != stdin)
-			fclose(ist);
+	  case 70:
+		output("WARNING: GF%.14s files not supported yet.\n", gh.mag);
+	        output("If you want to try anyways, please restart gfalist with the -f option.\n");
+		if(ist!=stdin) fclose(ist);
 		return;
+	  default:
+		output("ERROR: GFA file version: %d is unknown and not supported!\n",gh.vers);
+	        output("If you want to try anyways, please restart gfalist with the -f option.\n");
+		if(ist!=stdin) fclose(ist);
+		return;
+	  }
 	}
+	gf4tp_getdi(&gi, dibuf);
 
 	cnt = gh.sep[16] - gh.sep[0];
 
@@ -223,8 +231,7 @@ static void process(char *name, FILE *ost, char *file, unsigned int flags)
 		fclose(ist);
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
 	extern char *optarg;
 	extern int optind, opterr, optopt;
 	const char *outfile = NULL;
@@ -235,7 +242,7 @@ int main(int argc, char *argv[])
 
 	gf4tp_init(output, rvsimp);
 
-	while ((opt = getopt(argc, argv, "o:vctVbih")) != -1)
+	while ((opt = getopt(argc, argv, "o:vctVbihf")) != -1)
 		switch (opt) {
 		case 'o': /* Output */
 			if (outfile != NULL) {
@@ -246,6 +253,9 @@ int main(int argc, char *argv[])
 			break;
 		case 'b': /* Bug emulation */
 			flags |= TP_BUGEM;
+			break;
+		case 'f': /* force (do not check for GFA version) */
+			flags |= TP_FORCE;
 			break;
 		case 'v': /* Verbose */
 			flags |= TP_VERB;

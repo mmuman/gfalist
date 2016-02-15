@@ -570,7 +570,7 @@ unsigned char *gf4tp_tp(unsigned char *dst, struct gfainf *gi,
 			src += 8;
 			copy64b(u.ull, dcb);
 
-			dcs = dst;
+			dcs = (char *)dst;
 			sprintf(dcs, "%G", u.d);
 			while (*dcs != '\0')
 				switch (*dcs++) {

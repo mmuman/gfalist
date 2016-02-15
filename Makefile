@@ -59,8 +59,8 @@ libsky.a: $(SKY_OBJS)
 #	$(AR) rcv $@ $*.o
 #	rm $*.o
 
-gfalist: $(GFALIST_OBJS)
-	$(CC) $(LFLAGS) $+ -o $@ -lsky
+gfalist: $(GFALIST_OBJS) libsky.a
+	$(CC) $(LFLAGS) $+ -o $@ libsky.a
 gfalist.exe: $(CSRC)
 	$(WINCC)  $+ -o $@ 
 gfalist.ttp: $(CSRC)
