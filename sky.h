@@ -14,6 +14,7 @@
 #define TP_TIME   0x08 /* Measure time */
 #define TP_BUGEM  0x10 /* Emulate bugs */
 #define TP_SAVEINLINE  0x20 /* Save INLINE data into .inl files */
+#define TP_FORCE  0x40 /* do not check for GFA version */
 
 struct gfahdr {
 	unsigned char resvd:7;

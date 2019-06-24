@@ -1,12 +1,12 @@
-.TH gfalist 1 "06 May 2003"
+.TH GFALIST 1 "06 May 2003" "GFA-List"
 .SH NAME
 gfalist - Reads tokenized GFA BASIC version 3.x source files (.GFA) and converts them to human readable ASCII listings (.LST).
 
 .SH SYNOPSIS
 .B gfalist
-\fR[\fB-o lstfile\fR]
+\fR[\fB-o\fR \fIlstfile\fR]
 .RB [ -vcthi ]
-.RI  gfafile 
+.I gfafile 
 
 .SH DESCRIPTION
 Reads an .gfa file as input.  Produces a .lst (ASCII)
@@ -14,23 +14,39 @@ file as output.
 
 .SH OPTIONS
 .TP
-.BI "\-o " file
+.BR \-o " " \fIfile\fR
 Place output in file \c
 .I file\c
 \&. INLINE data will not be saved. 
 .TP
-.BI "\-i "
-Save INLINE data into separate files, named after the pointers, ending .inl.
+.BR \-b
+bug emulation.
 .TP
-.B -h,--help
+.BR \-c
+conversion.
+.TP
+.BR \-f
+force 
+.B gfalist
+to process the input file even when it is not the correct GFA-Basic version.
+.TP
+.BR \-i
+save INLINE data into separate files, named after the pointers, ending .inl.
+.TP
+.BR \-h ", " \-\-help ", " \-V
 makes 
 .B gfalist
 print a short usage information and exit.
 .TP
-.B -v,--verbose
+.BR \-t
+timer.
+.TP
+.BR \-v ", " \-\-verbose
+make 
 .B gfalist
-prints information about its processing on Standard Error.
+print information about its processing to \fIstderr\fR.
 
+.PP
 For detailed help and description of the implemented commands take a 
 look at the README file and manual which comes with the gfalist package. 
 
