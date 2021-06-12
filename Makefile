@@ -27,7 +27,7 @@ TARGETS = libsky.a gfalist
 SKY_ARC = libsky.a(sky.o) libsky.a(tables.o)
 SKY_OBJS = sky.o tables.o
 
-GFALIST_OBJS = gfalist.o charset.o
+GFALIST_OBJS = gfalist.o
 
 OBJS = $(SKY_OBJS) $(GFALIST_OBJS)
 
