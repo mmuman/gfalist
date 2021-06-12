@@ -11,7 +11,7 @@ WINCC=i586-mingw32msvc-gcc
 # Cross-Compiler fuer ATARI ST TOS
 TOSCC=m68k-atari-mint-gcc
 
-CFLAGS = -g3 -O2 -Wall 
+CFLAGS = -g3 -O2 -Wall --std=c99
 LFLAGS = -L.
 
 # Directories
@@ -33,7 +33,7 @@ OBJS = $(SKY_OBJS) $(GFALIST_OBJS)
 
 # Headerfiles which should be added to the distribution
 HSRC=charset.h  sky.h  tables.h
-CSRC= $(OBJS:.o=.c) 
+CSRC= $(OBJS:.o=.c)
 BINDIST= gfalist
 
 
